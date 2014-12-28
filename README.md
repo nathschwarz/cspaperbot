@@ -10,9 +10,8 @@ TABLE papers
     submitters text
 
 TABLE authors
-    surname text
-    forename text
-    CV text
+    name text
+    cv text
     homepage text
 
 TABLE users
