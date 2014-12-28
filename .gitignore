@@ -5,4 +5,4 @@ __pycache__/
 
 ### other stuff ###
 *.log
-
+*.db
