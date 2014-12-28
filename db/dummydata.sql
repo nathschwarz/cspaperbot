@@ -42,7 +42,7 @@ INSERT INTO 'users' ('Name', 'submissions', 'Discussed_submissions', 'Discussion
     (
         'cspaperbot',
         1,
-        '',
+        'Dummy paper 01',
         0
     ),
     (
