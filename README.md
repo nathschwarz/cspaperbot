@@ -1,21 +1,3 @@
-# db layout
-TABLE papers
-    title text
-    authors text
-    abstract text
-    link text
-    count_proposed integer
-    proposed_current_vote integer
-    discussion text
-    submitters text
+# CS paper bot
 
-TABLE authors
-    name text
-    cv text
-    homepage text
-
-TABLE users
-    name text
-    submissions integer
-    discussed_submissions text
-    discussion_comments integer
+Bot for /r/compsci to administrate the paper discussions and votings.
