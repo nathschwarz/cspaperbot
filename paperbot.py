@@ -5,9 +5,9 @@ import yaml
 import logging
 
 #logging defaults
-logging.basicConfig(filename='paperbot.log', level=logging.ERROR)
+logging.basicConfig(filename = 'paperbot.log', level = logging.ERROR)
 
-def load_config(conf_file='cspaperbot.conf'):
+def load_config(conf_file = 'cspaperbot.conf'):
     try:
         with open(conf_file, 'r') as f:
             return yaml.load(f)
