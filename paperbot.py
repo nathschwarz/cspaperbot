@@ -14,6 +14,13 @@ def load_config(conf_file='cspaperbot.conf'):
     except Exception as e:
         logging.error(e)
 
+def write_config(conf, conf_file = 'cspaperbot.conf'):
+    try:
+        with open(conf_file, 'w') as f:
+            yaml.dump(conf, f)
+    except Exception as e:
+        logging.error(e)
+
 def login(user_agent, username, password):
     try:
         r = praw.Reddit(user_agent = user_agent)
