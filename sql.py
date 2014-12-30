@@ -1,41 +1,46 @@
 #!/usr/bin/env python3
 
-import sqlite3
 import logging
+import nosqlite
 
 #logging defaults
 logging.basicConfig(filename='database.log', level=logging.ERROR)
 
 class Database:
-    """Class to interact with the sqlite-database."""
     db = None
-    cursor = None
+    papers = None
+    authors = None
+    users = None
 
-    def open(self, db_file = 'db/papers.db'):
-        """Opens the database and prepares the class."""
-        try:
-            self.db = sqlite3.connect(db_file)
-            self.db.row_factory = sqlite3.Row
-            self.cursor = self.db.cursor()
-        except Exception as e:
-            logging.error(e)
+    def open(self, db_file):
+        self.db = nosqlite.Connection(db_file)
+        self.papers = self.db['papers']
+        self.authors = self.db['authors']
+        self.users = self.db['users']
 
     def close(self):
-        if self.db:
-            self.db.commit()
-            self.db.close()
-        else:
-            logging.info('db empty - close unsuccessful')
+        self.db.close()
 
-    def get_row(self, table, row, entry):
-        self.cursor.execute("SELECT * FROM {0} WHERE {1} LIKE '%{2}%'".format(table, row, entry))
-        return self.cursor.fetchone()
+    def upsert(self, table, entry):
+        table.insert(entry)
 
-    def get_user(self, username):
-        return self.get_row('users', 'Name', username)
+    def upsert_paper(self, paper):
+        self.upsert(self.papers, paper)
 
-    def get_author(self, name):
-        return self.get_row('authors', 'Name', name)
+    def upsert_author(self, author):
+        self.upsert(self.authors, author)
 
-    def get_paper(self, title):
-        return self.get_row('papers', 'Title', title)
+    def upsert_user(self, user):
+        self.upsert(self.users, user)
+
+    def find_entry(self, table, spec):
+        return table.find(spec)
+
+    def find_paper(self, title):
+        return self.find_entry(self.papers, {'Title':title})
+
+    def find_author(self, name):
+        return self.find_entry(self.authors, {'Name':name})
+
+    def find_user(self, name):
+        return self.find_entry(self.users, {'Name':name})
