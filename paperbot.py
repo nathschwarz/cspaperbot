@@ -14,6 +14,15 @@ postfix = ("  \n*[Contact my creator](https://www.reddit.com/message/compose?to=
     "Post suggestions on /r/cspaperbot or open an issue on github | "
     "[source code](https://github.com/nathschwarz/cspaperbot)*")
 
+voting_title = "[Paper] Nominations and voting thread | Round "
+voting_body = ("Please submit the papers you want discussed and vote for those you'd like to see.  \n"
+    "Please use this as a template for nominations:  \n"
+    "\*\*Title\*\*:  \n"
+    "\*\*Authors\*\*:  \n"
+    "\*\*Link\*\*:  \n"
+    "\*\*Abstract\*\*:  \n"
+    "\*\*Comments\*\*:  \n\n"
+    "Keep in mind to separate authors with commata and not to use line breaks in the abstract.")
 
 regex_title = 'Title.*? ([\w :]+)\n'
 regex_authors = 'Authors.*? ([\w ,\.]+)'
@@ -47,6 +56,9 @@ def login(user_agent, username, password):
 def reply_to(comment, body):
     logging.info('Commented on ' + comment.id + ":\n" + body)
     comment.reply(body + '  \n' + postfix)
+
+def create_voting_thread(r, subreddit, paper_round):
+    return r.submit(subreddit, voting_title + str(paper_round), text=voting_body+postfix)
 
 def parse_comment_to_paper(comment):
     title = re.search(regex_title, comment)
