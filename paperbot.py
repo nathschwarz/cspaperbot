@@ -28,7 +28,7 @@ def load_config(conf_file = 'cspaperbot.conf'):
 def write_config(conf, conf_file = 'cspaperbot.conf'):
     try:
         with open(conf_file, 'w') as f:
-            yaml.dump(conf, f)
+            yaml.dump(conf, f, default_flow_style=False)
     except Exception as e:
         logging.error(e)
 
