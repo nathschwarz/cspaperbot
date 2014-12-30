@@ -3,6 +3,7 @@
 import praw
 import yaml
 import logging
+import sql
 import re
 
 #logging defaults
@@ -78,10 +79,15 @@ def process_comment(comment):
 def main():
     conf = load_config()
     r = login(user_agent, conf['username'], conf['password'])
+    db = sql.Database()
+    db.open(conf['db_file'])
+
     voting = r.get_submission(submission_id = conf['current_voting_thread'])
     comments = voting.comments
     for comment in comments:
         process_comment(comment)
+
+    db.close()
 
 if __name__ == "__main__":
     main()
