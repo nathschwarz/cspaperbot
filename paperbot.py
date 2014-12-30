@@ -10,7 +10,10 @@ import re
 logging.basicConfig(filename = 'paperbot.log', level = logging.ERROR)
 
 user_agent = 'CS paper bot v0.01 by /u/nath_schwarz'
-postfix = "\n*[Contact my creator](https://www.reddit.com/message/compose?to=%2Fr%2Fcspaperbot) | Post suggestions on /r/cspaperbot or open an issue on github | [source code](https://github.com/nathschwarz/cspaperbot)*"
+postfix = ("  \n*[Contact my creator](https://www.reddit.com/message/compose?to=%2Fr%2Fcspaperbot) | "
+    "Post suggestions on /r/cspaperbot or open an issue on github | "
+    "[source code](https://github.com/nathschwarz/cspaperbot)*")
+
 
 regex_title = 'Title.*? ([\w :]+)\n'
 regex_authors = 'Authors.*? ([\w ,\.]+)'
