@@ -10,6 +10,7 @@ import re
 logging.basicConfig(filename = 'paperbot.log', level = logging.ERROR)
 
 user_agent = 'CS paper bot v0.01 by /u/nath_schwarz'
+postfix = "\n*[Contact my creator](https://www.reddit.com/message/compose?to=%2Fr%2Fcspaperbot) | Post suggestions on /r/cspaperbot or open an issue on github | [source code](https://github.com/nathschwarz/cspaperbot)*"
 
 regex_title = 'Title.*? ([\w :]+)\n'
 regex_authors = 'Authors.*? ([\w ,\.]+)'
@@ -40,8 +41,9 @@ def login(user_agent, username, password):
     except Exception as e:
         logging.error(e)
 
-def get_comments_on_voting(r, thread_id):
-    return r.get_submission(submission_id = thread_id).comments
+def reply_to(comment, body):
+    logging.info('Commented on ' + comment.id + ":\n" + body)
+    comment.reply(body + '  \n' + postfix)
 
 def parse_comment_to_paper(comment):
     title = re.search(regex_title, comment)
@@ -67,7 +69,7 @@ def process_comment(comment):
             if comment.author not in query_paper['Submitters']:
                 query_paper['Submitters'] += comment.author.name
             if query_paper['Discussion'] is not '':
-                comment.reply('This paper was already discussed [here]('+query_paper['Discussion']+').\nThanks for your suggestion.')
+                reply_to(comment, 'This paper was already discussed [here]('+query_paper['Discussion']+').\nThanks for your suggestion.')
             db.upsert_paper(query_paper)
         else:
             paper['Count_proposed'] = 1
