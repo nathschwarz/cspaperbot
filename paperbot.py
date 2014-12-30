@@ -15,6 +15,14 @@ regex_authors = 'Authors.*? ([\w ,\.]+)'
 regex_author_list = '(\w[\w ]+)'
 regex_link = 'Link.*? (https?://[\w\-\.\/\~]+)\n'
 regex_abstract = 'Abstract.*? ([\w \.\?\,\-\'\(\)\[\]]+)\n'
+
+def load_config(conf_file = 'cspaperbot.conf'):
+    try:
+        with open(conf_file, 'r') as f:
+            return yaml.load(f)
+    except Exception as e:
+        logging.error(e)
+
 def write_config(conf, conf_file = 'cspaperbot.conf'):
     try:
         with open(conf_file, 'w') as f:
