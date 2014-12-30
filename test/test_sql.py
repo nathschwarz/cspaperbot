@@ -13,8 +13,8 @@ class TestSQL(unittest.TestCase):
         self.assertTrue(self.db.db != None)
 
     def test_get_paper(self):
-        to_check = 'Dummy paper 01'
         self.db.open()
+        to_check = 'Dummy paper 01'
         from_db = self.db.get_paper(to_check)
 
         self.test_cursor.execute("SELECT * FROM papers WHERE Title LIKE '{}'".format(to_check))
@@ -23,8 +23,8 @@ class TestSQL(unittest.TestCase):
         self.assertTrue(dummy == from_db)
 
     def test_get_user(self):
-        to_check = 'cspaperbot'
         self.db.open()
+        to_check = 'cspaperbot'
         from_db = self.db.get_user(to_check)
 
         self.test_cursor.execute("SELECT * FROM users WHERE Name LIKE '{}'".format(to_check))
@@ -33,8 +33,8 @@ class TestSQL(unittest.TestCase):
         self.assertTrue(dummy == from_db)
 
     def test_get_author(self):
-        to_check = 'Paul Paper-Leecher'
         self.db.open()
+        to_check = 'Paul Paper-Leecher'
         from_db = self.db.get_author(to_check)
 
         self.test_cursor.execute("SELECT * FROM authors WHERE Name LIKE '{}'".format(to_check))
