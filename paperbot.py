@@ -31,6 +31,7 @@ regex_link = 'Link.*? (https?://[\w\-\.\/\~]+)\n'
 regex_abstract = 'Abstract.*? ([\w \.\?\,\-\'\(\)\[\]]+)\n'
 
 def load_config(conf_file = 'cspaperbot.conf'):
+    """Loads configuration from 'cspaperbot.conf' and returns it."""
     try:
         with open(conf_file, 'r') as f:
             return yaml.load(f)
@@ -38,13 +39,15 @@ def load_config(conf_file = 'cspaperbot.conf'):
         logging.error(e)
 
 def write_config(conf, conf_file = 'cspaperbot.conf'):
+    """Writes configuration to 'cspaperbot.conf'."""
     try:
         with open(conf_file, 'w') as f:
             yaml.dump(conf, f, default_flow_style=False)
     except Exception as e:
         logging.error(e)
 
-def login(user_agent, username, password):
+def login(username, password):
+    """Logs in to reddit with given username and password, returns reddit-instance."""
     try:
         r = praw.Reddit(user_agent = user_agent)
         r.login(username, password)
@@ -54,13 +57,17 @@ def login(user_agent, username, password):
         logging.error(e)
 
 def reply_to(comment, body):
+    """Reply to given comment with given text. Appends postfix automatically."""
     logging.info('Commented on ' + comment.id + ":\n" + body)
     comment.reply(body + '  \n' + postfix)
 
 def create_voting_thread(r, subreddit, paper_round):
+    """Create a voting thread in given subreddit with given round-number. Appends postfix automatically."""
+    logging.info('Created voting thread')
     return r.submit(subreddit, voting_title + str(paper_round), text=voting_body+postfix)
 
 def parse_comment_to_paper(comment):
+    """Parses given comment body into a dictionary."""
     title = re.search(regex_title, comment)
     if title is None:
         logging.info('Empty comment submission:\n' + comment)
@@ -95,7 +102,7 @@ def process_comment(comment):
 
 def main():
     conf = load_config()
-    r = login(user_agent, conf['username'], conf['password'])
+    r = login(conf['username'], conf['password'])
     db = sql.Database()
     db.open(conf['db_file'])
 
