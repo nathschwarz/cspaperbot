@@ -161,6 +161,10 @@ def execute_actions():
         conf['next_voting_date'] = today_plus_two_weeks
         conf['current_voting_thread'] = create_voting_thread().id
     elif today == conf['next_discussion_date']:
+        create_discussion_thread()
+        conf['next_discussion_date'] = today_plus_two_weeks
+        conf['paper_round'] += 1
+
 def main():
     logging.info('This should log.')
     global conf, r
