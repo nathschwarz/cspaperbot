@@ -82,17 +82,19 @@ def create_voting_thread(r, subreddit, paper_round):
 
 def parse_comment_to_paper(comment):
     """Parses given comment body into a dictionary."""
-    title = re.search(regex_title, comment)
-    if title is None:
-        logging.info('Empty comment submission:\n' + comment)
+    if 'WITHDRAWN' in comment:
+        logging.info('Withdrawn submission:\n' + comment)
         return None
-    paper = {}
-    paper['Title'] = title.group(1)
-    paper['Authors'] = re.findall(regex_author_list, re.search(regex_authors, comment).group(1))
-    paper['Link'] = re.search(regex_link, comment).group(1)
-    paper['Abstract'] = re.search(regex_abstract, comment).group(1)
-    logging.info("Paper submission:\n" + paper)
-    return paper
+    try:
+        paper = {}
+        paper['Title'] = re.search(regex_title, comment).group(1)
+        paper['Authors'] = re.findall(regex_author_list, re.search(regex_authors, comment).group(1))
+        paper['Link'] = re.search(regex_link, comment).group(1)
+        paper['Abstract'] = re.search(regex_abstract, comment).group(1)
+        logging.info("Paper submission:\n" + str(paper))
+        return paper
+    except Exception as e:
+        logging.error('Parse error:\n' + comment, e)
 
 def process_comment(comment):
     paper = parse_comment_to_paper(comment.body)
