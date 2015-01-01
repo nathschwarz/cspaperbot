@@ -122,12 +122,11 @@ def process_comment(comment):
 
 def parse_voting_thread():
     logging.info('Parsing voting thread')
-    voting_thread = r.get_submission(submission_id = conf['current_voting_thread'], comment_sort = 'Best')
-
     if conf['moderator'] == True:
         voting_thread.unsticky()
         voting_thread.unset_contest_mode()
 
+    voting_thread = r.get_submission(submission_id = conf['current_voting_thread'], comment_sort = 'Best')
     comments = voting_thread.comments
     best_comment = None
     for comment in comments:
