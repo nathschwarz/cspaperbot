@@ -173,6 +173,7 @@ def main():
     execute_actions()
     db.close()
     write_config()
+    r.clear_authentication()
 
 if __name__ == "__main__":
     main()
