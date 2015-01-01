@@ -45,13 +45,14 @@ db = sql.Database()
 
 def load_config(conf_file = 'cspaperbot.conf'):
     """Loads configuration from 'cspaperbot.conf' and returns it."""
+    global conf
     try:
         with open(conf_file, 'r') as f:
-            return yaml.load(f)
+            conf = yaml.load(f)
     except Exception as e:
         logging.error(e)
 
-def write_config(conf, conf_file = 'cspaperbot.conf'):
+def write_config(conf_file = 'cspaperbot.conf'):
     """Writes configuration to 'cspaperbot.conf'."""
     try:
         with open(conf_file, 'w') as f:
@@ -59,13 +60,13 @@ def write_config(conf, conf_file = 'cspaperbot.conf'):
     except Exception as e:
         logging.error(e)
 
-def login(username, password):
+def login():
     """Logs in to reddit with given username and password, returns reddit-instance."""
+    global r
     try:
         r = praw.Reddit(user_agent = user_agent)
-        r.login(username, password)
+        r.login(conf['username'], conf['password'])
         logging.info('Login successful')
-        return r
     except Exception as e:
         logging.error(e)
 
@@ -124,7 +125,14 @@ def main():
     for comment in comments:
         process_comment(comment)
 
+def main():
+    logging.info('This should log.')
+    global conf, r
+    load_config()
+    login()
+    db.open(conf['db_file'])
     db.close()
+    write_config()
 
 if __name__ == "__main__":
     main()
