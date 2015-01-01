@@ -10,7 +10,7 @@ import datetime
 #logging defaults
 logging.basicConfig(filename = 'paperbot.log', level = logging.ERROR)
 
-user_agent = 'CS paper bot v0.01 by /u/nath_schwarz'
+user_agent = 'CS paper bot v1.0 by /u/nath_schwarz'
 postfix = ("  \n*[Contact my creator](https://www.reddit.com/message/compose?to=%2Fr%2Fcspaperbot) | "
     "Post suggestions on /r/cspaperbot or open an issue on github | "
     "[source code](https://github.com/nathschwarz/cspaperbot)*")
