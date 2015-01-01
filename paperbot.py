@@ -75,10 +75,30 @@ def reply_to(comment, body):
     logging.info('Commented on ' + comment.id + ":\n" + body)
     comment.reply(body + '  \n' + postfix)
 
-def create_voting_thread(r, subreddit, paper_round):
-    """Create a voting thread in given subreddit with given round-number. Appends postfix automatically."""
+def create_thread(title, body):
+    return r.submit(conf['subreddit'], title + str(conf['paper_round']), body + ' \n' + postfix)
+
+def create_voting_thread():
     logging.info('Created voting thread')
-    return r.submit(subreddit, voting_title + str(paper_round), text=voting_body+postfix)
+    voting_thread = create_thread(voting_title, voting_body)
+    if conf['moderator'] == True:
+        voting_thread.sticky()
+        voting_thread.set_contest_mode()
+    return voting_thread
+
+def create_discussion_thread():
+    logging.info('Created discussion thread')
+    chosen_paper = parse_voting_thread()
+    if chosen_paper:
+        discussion_thread = create_thread(discussion_title, discussion_body + chosen_paper.author.name + '  \n' + chosen_paper.body)
+        if conf['moderator'] == True:
+            discussion_thread.sticky()
+        chosen_paper = db.find_paper(parse_comment_to_paper(chosen_paper.body)['Title'])
+        chosen_paper['Discussion'] = discussion_thread.id
+        db.upsert_paper(chosen_paper)
+        return discussion_thread
+    else:
+        logging.error('Empty response from parsed voting thread - no participation or error in parsing.')
 
 def parse_comment_to_paper(comment):
     """Parses given comment body into a dictionary."""
