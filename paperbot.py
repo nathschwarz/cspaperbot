@@ -15,7 +15,7 @@ postfix = ("  \n*[Contact my creator](https://www.reddit.com/message/compose?to=
     "Post suggestions on /r/cspaperbot or open an issue on github | "
     "[source code](https://github.com/nathschwarz/cspaperbot)*")
 
-voting_title = "[Paper] Nominations and voting thread | Round "
+voting_title = "[Paper] Nominations and voting thread Round "
 voting_body = ("Please submit the papers you want discussed and vote for those you'd like to see.  \n"
     "Please use this as a template for nominations:  \n"
     "\*\*Title\*\*:  \n"
@@ -25,15 +25,23 @@ voting_body = ("Please submit the papers you want discussed and vote for those y
     "\*\*Comments\*\*:  \n\n"
     "Keep in mind to separate authors with commata and not to use line breaks in the abstract.")
 
+discussion_title = "[Paper] Discussion Round "
+discussion_body = ("The paper this time was nominated by /u/")
+
 regex_title = 'Title.*? ([\w :]+)\n'
 regex_authors = 'Authors.*? ([\w ,\.]+)'
 regex_author_list = '(\w[\w ]+)'
 regex_link = 'Link.*? (https?://[\w\-\.\/\~]+)\n'
-regex_abstract = 'Abstract.*? ([\w \.\?\,\-\'\(\)\[\]]+)\n'
+regex_abstract = 'Abstract.*? (.+)\n'
+
 #dates
 today = str(datetime.date.today())
 today_plus_two_weeks = str(datetime.date.today() + datetime.timedelta(weeks = 2))
 
+#globals
+r = None
+conf = None
+db = sql.Database()
 
 def load_config(conf_file = 'cspaperbot.conf'):
     """Loads configuration from 'cspaperbot.conf' and returns it."""
