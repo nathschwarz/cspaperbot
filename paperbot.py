@@ -5,6 +5,7 @@ import yaml
 import logging
 import sql
 import re
+import datetime
 
 #logging defaults
 logging.basicConfig(filename = 'paperbot.log', level = logging.ERROR)
@@ -29,6 +30,10 @@ regex_authors = 'Authors.*? ([\w ,\.]+)'
 regex_author_list = '(\w[\w ]+)'
 regex_link = 'Link.*? (https?://[\w\-\.\/\~]+)\n'
 regex_abstract = 'Abstract.*? ([\w \.\?\,\-\'\(\)\[\]]+)\n'
+#dates
+today = str(datetime.date.today())
+today_plus_two_weeks = str(datetime.date.today() + datetime.timedelta(weeks = 2))
+
 
 def load_config(conf_file = 'cspaperbot.conf'):
     """Loads configuration from 'cspaperbot.conf' and returns it."""
