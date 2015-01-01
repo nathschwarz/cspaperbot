@@ -166,7 +166,6 @@ def execute_actions():
         conf['paper_round'] += 1
 
 def main():
-    logging.info('This should log.')
     global conf, r
     load_config()
     login()
