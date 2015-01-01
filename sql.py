@@ -34,7 +34,11 @@ class Database:
         self.upsert(self.users, user)
 
     def find_entry(self, table, spec):
-        return table.find(spec)[0]
+        result = table.find(spec)
+        if result == []:
+            return None
+        else:
+            return result[0]
 
     def find_paper(self, title):
         return self.find_entry(self.papers, {'Title':title})
