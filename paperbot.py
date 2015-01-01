@@ -97,24 +97,28 @@ def parse_comment_to_paper(comment):
         logging.error('Parse error:\n' + comment, e)
 
 def process_comment(comment):
+    logging.info('Processing comment')
     paper = parse_comment_to_paper(comment.body)
     if paper:
         query_paper = db.find_paper(paper['Title'])
         if query_paper:
-            logging.info('Paper already submitted:' + query_paper)
+            logging.info('Paper already submitted:' + str(query_paper))
             query_paper['Count_proposed'] += 1
-            query_paper['Proposed_current_vote'] = 1
             if comment.author not in query_paper['Submitters']:
                 query_paper['Submitters'] += comment.author.name
-            if query_paper['Discussion'] is not '':
-                reply_to(comment, 'This paper was already discussed [here]('+query_paper['Discussion']+').\nThanks for your suggestion.')
             db.upsert_paper(query_paper)
+            #if the paper wasn't discussed it is added to the list of choices
+            if query_paper['Discussion'] is '':
+                return query_paper
+            else:
+                reply_to(comment, 'This paper was already discussed [here]('+query_paper['Discussion']+').\nThanks for your suggestion.')
         else:
             paper['Count_proposed'] = 1
-            paper['Proposed_current_vote'] = 1
             paper['Discussion'] = ''
             paper['Submitters'] = [comment.author.name]
             db.upsert_paper(paper)
+            return paper
+    return None
 
 def main():
     conf = load_config()
