@@ -120,16 +120,22 @@ def process_comment(comment):
             return paper
     return None
 
-def main():
-    conf = load_config()
-    r = login(conf['username'], conf['password'])
-    db = sql.Database()
-    db.open(conf['db_file'])
+def parse_voting_thread():
+    logging.info('Parsing voting thread')
+    voting_thread = r.get_submission(submission_id = conf['current_voting_thread'], comment_sort = 'Best')
 
-    voting = r.get_submission(submission_id = conf['current_voting_thread'])
-    comments = voting.comments
+    if conf['moderator'] == True:
+        voting_thread.unsticky()
+        voting_thread.unset_contest_mode()
+
+    comments = voting_thread.comments
+    best_comment = None
     for comment in comments:
         process_comment(comment)
+        if not best_comment:
+            best_comment = comment
+    return best_comment
+
 
 def main():
     logging.info('This should log.')
