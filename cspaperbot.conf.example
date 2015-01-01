@@ -1,0 +1,11 @@
+current_voting_thread: thread-id
+db_file: paper.db
+load_limit: 50
+moderator: false
+next_discussion_date: '2015-01-01'
+next_voting_date: '2015-01-01'
+paper_round: 1
+password: password
+secret: secret
+subreddit: sub
+username: username
