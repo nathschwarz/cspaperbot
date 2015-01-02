@@ -140,8 +140,9 @@ def process_comment(comment):
         if query_paper:
             logging.info('Paper already submitted:' + str(query_paper))
             query_paper['Count_proposed'] += 1
-            if comment.author not in query_paper['Submitters']:
-                query_paper['Submitters'] += comment.author.name
+            #This line is awful. Sadly nosqlite doesn't support sets
+            if comment.author.name not in paper['Submitters']:
+                query_paper['Submitters'] += [comment.author.name]
             db.upsert_paper(query_paper)
             #if the paper wasn't discussed it is added to the list of choices
             if query_paper['Discussion'] is '':
