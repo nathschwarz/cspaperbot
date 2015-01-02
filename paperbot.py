@@ -91,9 +91,12 @@ def create_discussion_thread():
     logging.info('Created discussion thread')
     list_submissions, top_paper = parse_voting_thread()
     if list_submissions:
+        table = submissiontable(list_submissions)
         discussion_thread = create_thread(discussion_title,
             discussion_body  + top_paper.author.name +
-            submissiontable(list_submissions) + top_paper.body)
+            '\n\nTables of submissions and votes can be viewed [here](/r/cspaperbot/wiki/voting/' +
+            today + ').\n\n' + top_paper.body)
+        add_wiki_page(table, discussion_thread.permalink)
         if conf['moderator'] == True:
             discussion_thread.sticky()
         top_paper = db.find_paper(parse_comment_to_paper(top_paper.body)['Title'])
@@ -103,8 +106,12 @@ def create_discussion_thread():
     else:
         logging.error('Empty response from parsed voting thread - no participation or error in parsing.')
 
+def add_wiki_page(table, link):
+    r.edit_wiki_page('cspaperbot', 'voting/'+today, '#Voting result of ' + today +
+            '\n\n[Discussion](' + link + ')' + table)
+
 def submissiontable(list_submissions):
-    table = "  \n\nKarma count | Submitter | Paper title | Link to paper  \n ---|---|---|---  \n"
+    table = '  \n\nKarma count | Submitter | Paper title | Link to paper  \n ---|---|---|---  \n'
     for submission in list_submissions:
         table += str(submission['Karma'])
         table += '|/u/' + submission['Last_submitter']
