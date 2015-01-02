@@ -127,10 +127,10 @@ def parse_comment_to_paper(comment):
         paper['Authors'] = re.findall(regex_author_list, re.search(regex_authors, comment).group(1))
         paper['Link'] = re.search(regex_link, comment).group(1)
         paper['Abstract'] = re.search(regex_abstract, comment).group(1)
-        logging.info("Paper submission:\n" + str(paper))
+        logging.info('Paper submission: ' + str(paper))
         return paper
     except Exception as e:
-        logging.error('Parse error:\n' + comment, e)
+        logging.error('Parse error: ' + comment, e)
 
 def process_comment(comment):
     logging.info('Processing comment')
