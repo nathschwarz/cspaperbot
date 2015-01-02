@@ -107,8 +107,12 @@ def create_discussion_thread():
         logging.error('Empty response from parsed voting thread - no participation or error in parsing.')
 
 def add_wiki_page(table, link):
-    r.edit_wiki_page('cspaperbot', 'voting/'+today, '#Voting result of ' + today +
-            '\n\n[Discussion](' + link + ')' + table)
+    subreddit = 'cspaperbot'
+    r.edit_wiki_page(subreddit, 'voting/'+today,
+            '#Voting result of ' + today + '\n\n[Discussion](' + link + ')' + table)
+    r.edit_wiki_page(subreddit, 'index',
+            '{0} \n[Voting of {1}](/r/{2}/wiki/voting/{1}/)'.
+                format(r.get_wiki_page(subreddit, 'index').content_md, today, subreddit))
 
 def submissiontable(list_submissions):
     table = '  \n\nKarma count | Submitter | Paper title | Link to paper  \n ---|---|---|---  \n'
