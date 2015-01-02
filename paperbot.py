@@ -29,11 +29,11 @@ voting_body = ("Please submit the papers you want discussed and vote for those y
 discussion_title = "[Paper] Discussion Round "
 discussion_body = ("The paper this time was nominated by /u/")
 
-regex_title = 'Title.*? ([\w :]+)\n'
-regex_authors = 'Authors.*? ([\w ,\.]+)'
+regex_title = 'Title[\*: ]+(.+)\n'
+regex_authors = 'Authors.*? ?(.+)'
 regex_author_list = '(\w[\w ]+)'
-regex_link = 'Link.*? (https?://[\w\-\.\/\~]+)\n'
-regex_abstract = 'Abstract.*? (.+)\n'
+regex_link = 'Link.*? ?(https?://[\w\-\.\/\~]+)\n'
+regex_abstract = 'Abstract[\*: ]+(.+)\n'
 
 #dates
 today = str(datetime.date.today())
@@ -89,22 +89,37 @@ def create_voting_thread():
 
 def create_discussion_thread():
     logging.info('Created discussion thread')
-    chosen_paper = parse_voting_thread()
-    if chosen_paper:
-        discussion_thread = create_thread(discussion_title, discussion_body + chosen_paper.author.name + '  \n' + chosen_paper.body)
+    list_submissions, top_paper = parse_voting_thread()
+    if list_submissions:
+        discussion_thread = create_thread(discussion_title,
+            discussion_body  + top_paper.author.name +
+            submissiontable(list_submissions) + top_paper.body)
         if conf['moderator'] == True:
             discussion_thread.sticky()
-        chosen_paper = db.find_paper(parse_comment_to_paper(chosen_paper.body)['Title'])
-        chosen_paper['Discussion'] = discussion_thread.id
-        db.upsert_paper(chosen_paper)
+        top_paper = db.find_paper(parse_comment_to_paper(top_paper.body)['Title'])
+        top_paper['Discussion'] = discussion_thread.permalink
+        db.upsert_paper(top_paper)
         return discussion_thread
     else:
         logging.error('Empty response from parsed voting thread - no participation or error in parsing.')
 
+def submissiontable(list_submissions):
+    table = "  \n\nKarma count | Submitter | Paper title | Link to paper  \n ---|---|---|---  \n"
+    for submission in list_submissions:
+        table += str(submission['Karma'])
+        table += '|/u/' + submission['Last_submitter']
+        table += '|[' + submission['Title'] + '](' + submission['Last_submission_link'] + ')'
+        table += '|' + '[Link](' + submission['Link'] + ')\n'
+    table += '  \n\n'
+    return table
+
 def parse_comment_to_paper(comment):
     """Parses given comment body into a dictionary."""
     if 'WITHDRAWN' in comment:
-        logging.info('Withdrawn submission:\n' + comment)
+        logging.info('Withdrawn submission:' + comment)
+        return None
+    if '[deleted]' in comment:
+        logging.info('Deleted submission' + comment)
         return None
     try:
         paper = {}
@@ -137,24 +152,24 @@ def process_comment(comment):
             paper['Count_proposed'] = 1
             paper['Discussion'] = ''
             paper['Submitters'] = [comment.author.name]
+            paper['Karma'] = comment.ups
+            paper['Last_submitter'] = comment.author.name
+            paper['Last_submission_link'] = comment.permalink
             db.upsert_paper(paper)
             return paper
-    return None
 
 def parse_voting_thread():
     logging.info('Parsing voting thread')
-    if conf['moderator'] == True:
-        voting_thread.unsticky()
-        voting_thread.unset_contest_mode()
 
     voting_thread = r.get_submission(submission_id = conf['current_voting_thread'], comment_sort = 'Best')
+    if conf['moderator']:
+        voting_thread.unsticky()
+        voting_thread.unset_contest_mode()
     comments = voting_thread.comments
-    best_comment = None
-    for comment in comments:
-        process_comment(comment)
-        if not best_comment:
-            best_comment = comment
-    return best_comment
+    top_comment = comments[0]
+    list_submissions = [ process_comment(comment) for comment in comments]
+    list_submissions = filter(None, list_submissions)
+    return list_submissions, top_comment
 
 def execute_actions():
     logging.info('Checking for actions')
