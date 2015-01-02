@@ -9,6 +9,7 @@ import datetime
 
 #logging defaults
 logging.basicConfig(filename = 'paperbot.log', level = logging.ERROR)
+conf_file = 'cspaperbot.conf'
 
 user_agent = 'CS paper bot v1.0 by /u/nath_schwarz'
 postfix = ("  \n*[Contact my creator](https://www.reddit.com/message/compose?to=%2Fr%2Fcspaperbot) | "
@@ -43,7 +44,7 @@ r = None
 conf = None
 db = sql.Database()
 
-def load_config(conf_file = 'cspaperbot.conf'):
+def load_config():
     """Loads configuration from 'cspaperbot.conf' and returns it."""
     global conf
     try:
@@ -52,7 +53,7 @@ def load_config(conf_file = 'cspaperbot.conf'):
     except Exception as e:
         logging.error(e)
 
-def write_config(conf_file = 'cspaperbot.conf'):
+def write_config():
     """Writes configuration to 'cspaperbot.conf'."""
     try:
         with open(conf_file, 'w') as f:
