@@ -161,7 +161,6 @@ def process_comment(comment):
 
 def parse_voting_thread():
     logging.info('Parsing voting thread')
-
     voting_thread = r.get_submission(submission_id = conf['current_voting_thread'], comment_sort = 'Best')
     if conf['moderator']:
         voting_thread.unsticky()
@@ -172,13 +171,41 @@ def parse_voting_thread():
     list_submissions = filter(None, list_submissions)
     return list_submissions, top_comment
 
+def parse_pms():
+    pms = r.get_unread()
+    for pm in pms:
+        author = pm.author.name
+        if 'subscribe' in pm.body:
+            if 'discussion' in pm.body:
+                logging.info('Discussion subscriber' + author)
+                conf['discussion_subscribers'].add(author)
+            if 'voting' in pm.body:
+                logging.info('Voting subscriber' + author)
+                conf['voting_subscribers'].add(author)
+        if 'unsubscribe' in pm.body:
+            if 'discussion' in pm.body:
+                logging.info('Discussion unsubscriber' + author)
+                conf['discussion_subscribers'].remove(author)
+            if 'voting' in pm.body:
+                logging.info('Voting unsubscriber' + author)
+                conf['voting_subscribers'].remove(author)
+        pm.mark_as_read()
+
+def send_notifications(link, title, recipients):
+    for recipient in recipients:
+        r.send_message(recipient, title, link)
+
 def execute_actions():
     logging.info('Checking for actions')
+    parse_pms()
     if today == conf['next_voting_date']:
+        thread = create_voting_thread()
+        send_notifications(thread.permalink, thread.title, conf['voting_subscribers'])
         conf['next_voting_date'] = today_plus_two_weeks
-        conf['current_voting_thread'] = create_voting_thread().id
+        conf['current_voting_thread'] = thread.id
     elif today == conf['next_discussion_date']:
-        create_discussion_thread()
+        thread = create_discussion_thread()
+        send_notifications(thread.permalink, thread.title, conf['discussion_subscribers'])
         conf['next_discussion_date'] = today_plus_two_weeks
         conf['paper_round'] += 1
 
