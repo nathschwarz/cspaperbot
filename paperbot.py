@@ -14,7 +14,9 @@ conf_file = 'cspaperbot.conf'
 user_agent = 'CS paper bot v1.0 by /u/nath_schwarz'
 postfix = ("  \n*[Contact my creator](https://www.reddit.com/message/compose?to=%2Fr%2Fcspaperbot) | "
     "Post suggestions on /r/cspaperbot or open an issue on github | "
-    "[source code](https://github.com/nathschwarz/cspaperbot)*")
+    "[source code](https://github.com/nathschwarz/cspaperbot)"
+    "[wiki](/r/cspaperbot/wiki)"
+    "*")
 
 voting_title = "[Paper] Nominations and voting thread Round "
 voting_body = ("Please submit the papers you want discussed and vote for those you'd like to see.  \n"
