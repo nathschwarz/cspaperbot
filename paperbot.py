@@ -29,7 +29,10 @@ voting_body = ("Please submit the papers you want discussed and vote for those y
     "Keep in mind to separate authors with commata and not to use line breaks in the abstract.")
 
 discussion_title = "[Paper] Discussion Round "
-discussion_body = ("The paper this time was nominated by /u/")
+discussion_body = ("The paper this time was nominated by /u/{0}\n\n"
+        "The table of submissions and votes for this voting can be viewed [here](/r/cspaperbot/wiki/voting/{1}  \n"
+        "Links for all tables can be found [here](/r/cspaperbot/wiki/index#wiki_votings)\n\n"
+        "{2}")
 
 regex_title = 'Title[\*: ]+(.+)\n'
 regex_authors = 'Authors.*? ?(.+)'
@@ -93,12 +96,8 @@ def create_discussion_thread():
     logging.info('Created discussion thread')
     list_submissions, top_paper = parse_voting_thread()
     if list_submissions:
-        table = submissiontable(list_submissions)
-        discussion_thread = create_thread(discussion_title,
-            discussion_body  + top_paper.author.name +
-            '\n\nTables of submissions and votes can be viewed [here](/r/cspaperbot/wiki/voting/' +
-            today + ').\n\n' + top_paper.body)
-        add_wiki_page(table, discussion_thread.permalink)
+        discussion_thread = create_thread(discussion_title, discussion_body.format(top_paper.author.name, today, top_paper.body))
+        add_wiki_page(submissiontable(list_submissions), discussion_thread.permalink)
         if conf['moderator'] == True:
             discussion_thread.sticky()
         top_paper = db.find_paper(parse_comment_to_paper(top_paper.body)['Title'])
@@ -110,20 +109,19 @@ def create_discussion_thread():
 
 def add_wiki_page(table, link):
     subreddit = 'cspaperbot'
-    r.edit_wiki_page(subreddit, 'voting/'+today,
-            '#Voting result of ' + today + '\n\n[Discussion](' + link + ')' + table)
-    r.edit_wiki_page(subreddit, 'index',
-            '{0} \n[Voting of {1}](/r/{2}/wiki/voting/{1}/)'.
+    r.edit_wiki_page(subreddit, 'voting/'+today, '#Voting result of {0}\n\n[Discussion]({1})\n\n{2}'.format(today, link, table))
+    r.edit_wiki_page(subreddit, 'index', '{0}  \n[Voting of {1}](/r/{2}/wiki/voting/{1}/)'.
                 format(r.get_wiki_page(subreddit, 'index').content_md, today, subreddit))
 
 def submissiontable(list_submissions):
-    table = '  \n\nKarma count | Submitter | Paper title | Link to paper  \n ---|---|---|---  \n'
+    table = 'Karma count | Submitter | Paper title | Link to paper  \n ---|---|---|---  \n'
     for submission in list_submissions:
-        table += str(submission['Karma'])
-        table += '|/u/' + submission['Last_submitter']
-        table += '|[' + submission['Title'] + '](' + submission['Last_submission_link'] + ')'
-        table += '|' + '[Link](' + submission['Link'] + ')\n'
-    table += '  \n\n'
+        table += '{0} | /u/{1} | [{2}]({3}) | [Link]({4})\n'.format(
+                str(submission['Karma']),
+                submission['Last_submitter'],
+                submission['Title'], submission['Last_submission_link'],
+                submission['Link'])
+    table += '\n\n'
     return table
 
 def parse_comment_to_paper(comment):
