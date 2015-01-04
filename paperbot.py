@@ -129,9 +129,6 @@ def parse_comment_to_paper(comment):
     if 'WITHDRAWN' in comment:
         logging.info('Withdrawn submission:' + comment)
         return None
-    if '[deleted]' in comment:
-        logging.info('Deleted submission' + comment)
-        return None
     try:
         paper = {}
         paper['Title'] = re.search(regex_title, comment).group(1)
@@ -172,15 +169,14 @@ def process_comment(comment):
 
 def parse_voting_thread():
     logging.info('Parsing voting thread')
-    voting_thread = r.get_submission(submission_id = conf['current_voting_thread'], comment_sort = 'Best')
+    voting_thread = r.get_submission(submission_id = conf['current_voting_thread'])
     if conf['moderator']:
         voting_thread.unsticky()
         voting_thread.unset_contest_mode()
-    comments = voting_thread.comments
-    top_comment = comments[0]
-    list_submissions = [ process_comment(comment) for comment in comments]
-    list_submissions = filter(None, list_submissions)
-    return list_submissions, top_comment
+    comments = sorted([ comment for comment in voting_thread.comments if comment.author ],
+            key = lambda x: x.ups, reverse = True)
+    list_submissions = [ process_comment(comment) for comment in comments ]
+    return list_submissions, comments[0]
 
 def parse_pms():
     pms = r.get_unread()
