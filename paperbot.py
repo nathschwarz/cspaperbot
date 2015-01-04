@@ -30,7 +30,7 @@ voting_body = ("Please submit the papers you want discussed and vote for those y
 
 discussion_title = "[Paper] Discussion Round "
 discussion_body = ("The paper this time was nominated by /u/{0}\n\n"
-        "The table of submissions and votes for this voting can be viewed [here](/r/cspaperbot/wiki/voting/{1}  \n"
+        "The table of submissions and votes for this voting can be viewed [here](/r/cspaperbot/wiki/voting/{1})  \n"
         "Links for all tables can be found [here](/r/cspaperbot/wiki/index#wiki_votings)\n\n"
         "{2}")
 
