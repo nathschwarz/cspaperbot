@@ -182,13 +182,6 @@ def parse_pms():
     pms = r.get_unread()
     for pm in pms:
         author = pm.author.name
-        if 'subscribe' in pm.body:
-            if 'discussion' in pm.body:
-                logging.info('Discussion subscriber' + author)
-                conf['discussion_subscribers'].add(author)
-            if 'voting' in pm.body:
-                logging.info('Voting subscriber' + author)
-                conf['voting_subscribers'].add(author)
         if 'unsubscribe' in pm.body:
             if 'discussion' in pm.body:
                 logging.info('Discussion unsubscriber' + author)
@@ -196,6 +189,16 @@ def parse_pms():
             if 'voting' in pm.body:
                 logging.info('Voting unsubscriber' + author)
                 conf['voting_subscribers'].remove(author)
+        elif 'subscribe' in pm.body:
+            if 'discussion' in pm.body:
+                logging.info('Discussion subscriber' + author)
+                conf['discussion_subscribers'].add(author)
+            if 'voting' in pm.body:
+                logging.info('Voting subscriber' + author)
+                conf['voting_subscribers'].add(author)
+        else:
+            logging.info('Unparseable message from ' + author + ', forwarding')
+            r.send_message('nath_schwarz', 'Unparseable message from ' + author, pm.body)
         pm.mark_as_read()
 
 def send_notifications(link, title, recipients):
