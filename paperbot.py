@@ -182,20 +182,28 @@ def parse_pms():
     pms = r.get_unread()
     for pm in pms:
         author = pm.author.name
-        if 'unsubscribe' in pm.body:
-            if 'discussion' in pm.body:
-                logging.info('Discussion unsubscriber' + author)
-                conf['discussion_subscribers'].remove(author)
-            if 'voting' in pm.body:
-                logging.info('Voting unsubscriber' + author)
-                conf['voting_subscribers'].remove(author)
-        elif 'subscribe' in pm.body:
-            if 'discussion' in pm.body:
-                logging.info('Discussion subscriber' + author)
-                conf['discussion_subscribers'].add(author)
-            if 'voting' in pm.body:
-                logging.info('Voting subscriber' + author)
-                conf['voting_subscribers'].add(author)
+        if 'reply' in pm.subject:
+            logging.info('Reply to comment or post logged')
+        if 'subscribe' in pm.body:
+            reply = "Thanks, you're now "
+            if 'unsubscribe' in pm.body:
+                reply += "unsubscribed from "
+                if 'discussion' in pm.body:
+                    conf['discussion_subscribers'].discard(author)
+                    reply += "discussion "
+                if 'voting' in pm.body:
+                    conf['voting_subscribers'].discard(author)
+                    reply += "voting"
+            else:
+                reply += "subscribed to "
+                if 'discussion' in pm.body:
+                    conf['discussion_subscribers'].add(author)
+                    reply += "discussion "
+                if 'voting' in pm.body:
+                    conf['voting_subscribers'].add(author)
+                    reply += "voting"
+            logging.info('Subscriptions: ' + author + ' - '+reply)
+            r.send_message(pm.author.name, 'Submission settings', reply)
         else:
             logging.info('Unparseable message from ' + author + ', forwarding')
             r.send_message('nath_schwarz', 'Unparseable message from ' + author, pm.body)
