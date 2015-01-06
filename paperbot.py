@@ -246,11 +246,13 @@ def main():
         logging.basicConfig(filename = 'cspaperbot.log')
     logger = logging.getLogger('cspaperbot')
 
+    logger.info('Initialization')
     global conf, r
     load_config()
     login()
     db.open(conf['db_file'])
     execute_actions()
+    logger.info('Actions done, close db, save and logout')
     db.close()
     write_config()
     r.clear_authentication()
