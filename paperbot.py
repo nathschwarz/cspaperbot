@@ -6,9 +6,8 @@ import logging
 import sql
 import re
 import datetime
+import argparse
 
-#logging defaults
-logging.basicConfig(filename = 'paperbot.log', level = logging.ERROR)
 conf_file = 'cspaperbot.conf'
 
 user_agent = 'CS paper bot v1.0 by /u/nath_schwarz'
@@ -112,6 +111,7 @@ def add_wiki_page(table, link):
     r.edit_wiki_page(subreddit, 'voting/'+today, '#Voting result of {0}\n\n[Discussion]({1})\n\n{2}'.format(today, link, table))
     r.edit_wiki_page(subreddit, 'index', '{0}  \n[Voting of {1}](/r/{2}/wiki/voting/{1}/)'.
                 format(r.get_wiki_page(subreddit, 'index').content_md, today, subreddit))
+    logging.info('Uploaded wiki-pages for new voting')
 
 def submissiontable(list_submissions):
     table = 'Karma count | Submitter | Paper title | Link to paper  \n ---|---|---|---  \n'
@@ -158,6 +158,7 @@ def process_comment(comment):
             else:
                 reply_to(comment, 'This paper was already discussed [here]('+query_paper['Discussion']+').\nThanks for your suggestion.')
         else:
+            logging.info('New paper')
             paper['Count_proposed'] = 1
             paper['Discussion'] = ''
             paper['Submitters'] = [comment.author.name]
@@ -210,6 +211,7 @@ def parse_pms():
         pm.mark_as_read()
 
 def send_notifications(link, title, recipients):
+    logging.info('Sending notification to subscribers')
     for recipient in recipients:
         r.send_message(recipient, title, link)
 
@@ -228,6 +230,18 @@ def execute_actions():
         conf['paper_round'] += 1
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v", "--verbose", action="store_true", help="verbose output")
+    parser.add_argument("--stdout", action="store_true", help="print log output to stdout")
+    args = parser.parse_args()
+
+    if args.verbose:
+        logging.basicConfig(level = logging.INFO)
+    else:
+        logging.basicConfig(level = logging.ERROR)
+    if not args.stdout:
+        logging.basicConfig(filename = 'cspaperbot.log')
+
     global conf, r
     load_config()
     login()
