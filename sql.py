@@ -21,7 +21,7 @@ class Database:
             self.logger.error('Failed to open database: ', e)
 
     def close(self):
-        logger.info('Closing database')
+        self.logger.info('Closing database')
         self.db.close()
 
     def upsert(self, table, entry):
