@@ -3,25 +3,29 @@
 import logging
 import nosqlite
 
-#logging defaults
-logging.basicConfig(filename='database.log', level=logging.ERROR)
-
 class Database:
     db = None
     papers = None
     authors = None
     users = None
+    logger = logging.getLogger('sql')
 
     def open(self, db_file):
-        self.db = nosqlite.Connection(db_file)
-        self.papers = self.db['papers']
-        self.authors = self.db['authors']
-        self.users = self.db['users']
+        logger.info('Opening database')
+        try:
+            self.db = nosqlite.Connection(db_file)
+            self.papers = self.db['papers']
+            self.authors = self.db['authors']
+            self.users = self.db['users']
+        except Exception as e:
+            logger.error('Failed to open database: ', e)
 
     def close(self):
+        logger.info('Closing database')
         self.db.close()
 
     def upsert(self, table, entry):
+        logger.fino('Upserting entry')
         table.insert(entry)
 
     def upsert_paper(self, paper):
@@ -34,6 +38,7 @@ class Database:
         self.upsert(self.users, user)
 
     def find_entry(self, table, spec):
+        logger.info('Searching for entry')
         result = table.find(spec)
         if result == []:
             return None
