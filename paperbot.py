@@ -33,11 +33,12 @@ discussion_body = ("The paper this time was nominated by /u/{0}\n\n"
         "Links for all tables can be found [here](/r/cspaperbot/wiki/index#wiki_votings)\n\n"
         "{2}")
 
-regex_title = 'Title[\*: ]+(.+)\n'
-regex_authors = 'Authors.*? ?(.+)'
-regex_author_list = '(\w[\w ]+)'
-regex_link = 'Link.*? ?(https?://[\w\-\.\/\~]+)\n'
-regex_abstract = 'Abstract[\*: ]+(.+)\n'
+regex_middle = '[\*: \n]+'
+regex_title = 'Title' + regex_middle + '(.+)\n'
+regex_authors = 'Authors' + regex_middle + '(.+)'
+regex_author_list = '(\w[\w \.]+)'
+regex_link = 'Link' + regex_middle + '(https?://.+) *\n'
+regex_abstract = 'Abstract' + regex_middle + '(.+)\n'
 
 #dates
 today = str(datetime.date.today())
@@ -133,7 +134,7 @@ def parse_comment_to_paper(comment):
     try:
         paper = {}
         paper['Title'] = re.search(regex_title, comment).group(1)
-        paper['Authors'] = re.findall(regex_author_list, re.search(regex_authors, comment).group(1))
+        paper['Authors'] = re.findall(regex_author_list, re.search(regex_authors, comment).group(1).replace('and', ','))
         paper['Link'] = re.search(regex_link, comment).group(1)
         paper['Abstract'] = re.search(regex_abstract, comment).group(1)
         logger.info('Paper submission: ' + str(paper))
