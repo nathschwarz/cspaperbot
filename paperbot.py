@@ -210,7 +210,7 @@ def parse_pms():
             r.send_message(pm.author.name, 'Submission settings', reply)
         else:
             logger.info('Unparseable message from ' + author + ', forwarding')
-            r.send_message('nath_schwarz', 'Unparseable message from ' + author, pm.body)
+            r.send_message('nath_schwarz', 'Unparseable message from ' + author, pm.subject + '  \n' + pm.body)
         pm.mark_as_read()
 
 def send_notifications(link, title, recipients):
@@ -243,8 +243,7 @@ def main():
         logging.basicConfig(level = logging.INFO)
     else:
         logging.basicConfig(level = logging.ERROR)
-    if not args.stdout:
-        logging.basicConfig(filename = 'cspaperbot.log')
+    logging.basicConfig(filename = 'cspaperbot.log')
     logger = logging.getLogger('cspaperbot')
 
     logger.info('Initialization')
