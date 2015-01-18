@@ -25,7 +25,7 @@ class Database:
         self.db.close()
 
     def upsert(self, table, entry):
-        self.logger.fino('Upserting entry')
+        self.logger.info('Upserting entry')
         table.insert(entry)
 
     def upsert_paper(self, paper):
